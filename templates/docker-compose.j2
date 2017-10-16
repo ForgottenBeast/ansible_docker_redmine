@@ -33,7 +33,7 @@ services:
 {% if SSL == True %}
      LETSENCRYPT_HOST: {{ redmine_domain_name }}
      LETSENCRYPT_EMAIL: {{ redmine_letsencrypt_mail }}
-     LETSENCRYPT_TEST: "{{ letsencrypt_testmode }}"
+     LETSENCRYPT_TEST: "{{ remine_letsencrypt_testmode }}"
 {% endif %}
 
     links:

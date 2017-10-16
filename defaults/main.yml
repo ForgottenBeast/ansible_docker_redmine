@@ -12,7 +12,7 @@ redmine_volumes:
 SSL: False
 redmine_domain_name: redmine.mysite.xyz,redmine.oapzeroeaprjeopa.onion
 redmine_letsencrypt_mail: me@mydomain.com
-letsencrypt_testmode: 'true'
+redmine_letsencrypt_testmode: 'true'
 
 
 redmine_backups:
@@ -26,6 +26,9 @@ gmail_address: whatever@gmail.com
 gmail_password: whateverpass
 
 redmine_plugins:
+  git_remote: >
+    git clone https://github.com/dergachev/redmine_git_remote
+
   mattermost: >
     git clone https://github.com/altsol/redmine_mattermost.git redmine_mattermost;
     cd redmine_mattermost;
