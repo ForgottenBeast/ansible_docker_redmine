@@ -3,6 +3,12 @@
 {% endmacro %}
 
 version: "2"
+
+networks:
+  proxy_net:
+    external:
+      name: proxy_net
+
 volumes:
   {{ REDMINE_DB_VOLUME }}:
     external: True
@@ -13,7 +19,8 @@ services:
 
   redmine:
     image: redmine
-    network_mode: bridge
+    networks:
+      - proxy_net
     volumes:
       - {{ REDMINE_VOLUME }}:/usr/src/redmine
     environment:
@@ -32,7 +39,8 @@ services:
     restart: always
 
   mysql:
-    network_mode: bridge
+    networks:
+      - proxy_net
     image: mariadb:latest
     volumes:
       - {{ REDMINE_DB_VOLUME }}:/var/lib/mysql
@@ -41,16 +49,3 @@ services:
       - MYSQL_DATABASE=redmine
     restart: always
 
-
-{% if TOR_HH %}
-  torhh:
-    restart: always
-    network_mode: bridge
-    image: goldy/tor-hidden-service
-    links:
-      - redmine
-    environment:
-      REDMINE_KEY: |
-{{ wpkey(tor_hidden_service_private_key) | indent(8,True) }}
-      REDMINE_PORTS: 3000:80
-{% endif %}
