@@ -2,3 +2,22 @@
   docker_service:
     state: present
     project_src: /tmp/{{ project_name }}
+
+- name: "Send ssh keys"
+  file:
+    content: "{{ item.value }}"
+    name: /tmp/{{item.key}}
+  with_dict: "{{redmine_ssh_keys}}"
+
+- name: "Add ssh keys"
+  command: >
+    docker exec {{project_name}}_redmine_1 bash -c "mkdir /root/.ssh"
+    docker cp /tmp/id_rsa {{project_name}}_redmine_1:/root/.ssh/id_rsa
+    docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/root/.ssh/id_rsa.pub
+
+- name: "Delete ssh keys"
+  file:
+    name: /tmp/{{item.key}}
+    state: absent
+  with_dict: "{{redmine_ssh_keys}}"
+

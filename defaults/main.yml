@@ -25,6 +25,10 @@ redmine_backups:
 gmail_address: whatever@gmail.com
 gmail_password: whateverpass
 
+redmine_ssh_keys:
+  id_rsa: AAAA.......thing@there
+  id_rsa.pub: AAAA.......thing@there
+
 redmine_plugins:
   git_remote: >
     git clone https://github.com/dergachev/redmine_git_remote
