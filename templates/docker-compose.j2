@@ -1,7 +1,3 @@
-{% macro wpkey(key) %}
-{{ key }}
-{% endmacro %}
-
 version: "2"
 
 networks:
@@ -10,9 +6,13 @@ networks:
       name: proxy_net
 
 volumes:
-  {{ REDMINE_DB_VOLUME }}:
+  {{ redmine_volumes.REDMINE_DB_VOLUME }}:
     external: True
-  {{ REDMINE_VOLUME }}:
+  {{ redmine_volumes.REDMINE_VOLUME }}:
+    external: True
+  {{ redmine_volumes.REDMINE_REPO_VOLUME }}:
+    external: True
+  {{ redmine_volumes.REDMINE_GEMS_VOLUME }}:
     external: True
 
 services:
@@ -22,8 +22,9 @@ services:
     networks:
       - proxy_net
     volumes:
-      - {{ REDMINE_VOLUME }}:/usr/src/redmine
-      - {{ REDMINE_REPO_VOLUME }}:/repos
+      - {{ redmine_volumes.REDMINE_VOLUME }}:/usr/src/redmine
+      - {{ redmine_volumes.REDMINE_REPO_VOLUME }}:/repos
+      - {{ redmine_volumes.REDMINE_GEMS_VOLUME }}:/usr/local/bundle
     environment:
      VIRTUAL_HOST: {{ redmine_domain_name }}
      VIRTUAL_PROTO: http
@@ -44,7 +45,7 @@ services:
       - proxy_net
     image: mariadb:latest
     volumes:
-      - {{ REDMINE_DB_VOLUME }}:/var/lib/mysql
+      - {{ redmine_volumes.REDMINE_DB_VOLUME }}:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD={{REDMINE_DB_PASSWORD}}
       - MYSQL_DATABASE=redmine

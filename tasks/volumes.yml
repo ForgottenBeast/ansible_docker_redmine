@@ -1,8 +1,8 @@
-- name: "check if {{ item }} exists"
-  command: docker volume inspect {{ item }}
+- name: "check if {{ item.value }} exists"
+  command: docker volume inspect {{ item.value }}
   register: myvolume_exists
-  failed_when: false
+  ignore_errors: True
 
-- name: "create {{ item }}"
-  command: docker volume create --name {{ item }}
+- name: "create {{ item.value }}"
+  command: "docker volume create --name {{ item.value }}"
   when: myvolume_exists|failed

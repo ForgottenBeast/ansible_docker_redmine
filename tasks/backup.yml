@@ -1,37 +1,20 @@
-- name: "Backup redmine data"
+- name: "Backup redmine volumes"
   tags: redmine_backup
   shell: |
-    docker run --rm -i -v {{ REDMINE_VOLUME }}:/volume:ro -v /tmp:/backup {{ alpine_image }} \
-       tar -cjf /backup/redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2 -C /volume ./
-
-- name: "Backup redmine db"
-  tags: redmine_db_backup
-  shell: |
-    docker run --rm -i -v {{ REDMINE_DB_VOLUME }}:/volume:ro -v /tmp:/backup {{ alpine_image }} \
-       tar -cjf /backup/redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2 -C /volume ./
-
-- name: "Retrieve db backup files"
-  tags: redmine_db_backup
-  fetch:
-    flat: True
-    src: /tmp/{{ item }}
-    dest: "{{ playbook_dir }}/{{ item }}"
-  with_items:
-    - "redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+    docker run --rm -i -v {{ item.key }}:/volume:ro -v /tmp:/backup {{ alpine_image }} \
+       tar -cjf /backup/{{item.value}}_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2 -C /volume ./
+  with_dict: "{{redmine_volumes}}"
 
 - name: "Retrieve redmine backup files"
-  tags: redmine_backup
+  tags: redmine_db_backup
   fetch:
     flat: True
-    src: /tmp/{{ item }}
-    dest: "{{ playbook_dir }}/{{ item }}"
-  with_items:
-    - "redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+    src: /tmp/{{ item.value }}_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2
+    dest: "{{ playbook_dir }}/{{ item.value }}_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+  with_dict: "{{redmine_volumes}}"
 
 - name: "Clean up backup files"
   file:
-    name: "{{ item }}"
+    name: "/tmp/{{ item.value }}_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
     state: absent
-  with_items:
-    - "/tmp/redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
-    - "/tmp/redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+  with_dict: "{{ redmine_volumes }}"

@@ -1,48 +1,32 @@
 - name: "Copy data from backup folder to remote host"
   tags:
     - redmine_restore
-    - redmine_db_restore
   copy:
     src: "{{ item }}"
-    dest: /tmp/{{ item }}
-  with_items:
-    - "{{ REDMINE_BACKUP_FILE }}"
-    - "{{ REDMINE_DB_BACKUP_FILE }}"
+    dest: /tmp/{{ item.key }}
+  with_dict: "{{ redmine_backups }}"
 
 - name: "Stopping redmine stack"
   docker_service:
     state: absent
     project_src: /tmp/{{ project_name }}
 
-- name: "restore data from backup to redmine"
+- name: "restore data from backup"
   tags: redmine_restore
   shell: |
-    docker run --rm -i -v {{ REDMINE_VOLUME }}:/redmine -v /tmp:/backup:ro \
+    docker run --rm -i -v {{ item.value }}:/redmine -v /tmp:/backup:ro \
         {{ alpine_image }} \
         sh -c "\
         apk update;\
         apk add -y tar;\
         rm -rf /redmine/* ;\
-        tar -C /redmine/ -xjf /backup/{{ REDMINE_BACKUP_FILE }};"
-
-- name: "restore data from backup to db"
-  tags: redmine_db_restore
-  shell: |
-    docker run --rm -i -v {{ REDMINE_DB_VOLUME }}:/db -v /tmp:/backup:ro \
-        {{ alpine_image }} \
-        sh -c "\
-        apk update;\
-        apk add -y tar;\
-        rm -rf /db/* ;\
-        tar -C /db/ -xjf /backup/{{ REDMINE_DB_BACKUP_FILE }}"
+        tar -C /redmine/ -xjf /backup/{{ item.key }};"
+  with_dict: "{{redmine_backups}}"
 
 - name: "Remove backup data"
   tags:
     - redmine_restore
-    - redmine_db_restore
   file:
-    name: /tmp/{{ item }}
+    name: /tmp/{{ item.key }}
     state: absent
-  with_items:
-    - "{{ REDMINE_BACKUP_FILE }}"
-    - "{{ REDMINE_DB_BACKUP_FILE }}"
+  with_dict: "{{redmine_backups}}"

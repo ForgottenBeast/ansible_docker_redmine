@@ -2,4 +2,4 @@
   include: volumes.yml
   become: True
   tags: redmine_setup
-  with_items: "{{redmine_volumes}}"
+  with_dict: "{{redmine_volumes}}"

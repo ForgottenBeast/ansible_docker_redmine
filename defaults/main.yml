@@ -4,9 +4,10 @@ project_name: redmine
 REDMINE_DB_PASSWORD: example
 
 redmine_volumes:
-  - REDMINE_DB_VOLUME: "redminedb"
-  - REDMINE_VOLUME: "redmine"
-  - REDMINE_REPO_VOLUME: "redmine_repos"
+  REDMINE_DB_VOLUME: "redminedb"
+  REDMINE_VOLUME: "redmine"
+  REDMINE_REPO_VOLUME: "redmine_repos"
+  REDMINE_GEMS_VOLUME: "redmine_gems"
 
 SSL: False
 redmine_domain_name: redmine.mysite.xyz,redmine.oapzeroeaprjeopa.onion
@@ -14,9 +15,22 @@ redmine_letsencrypt_mail: me@mydomain.com
 letsencrypt_testmode: 'true'
 
 
-REDMINE_BACKUP_FILE: redmine_file.tar.bz2
-REDMINE_DB_BACKUP_FILE: redmine_db.tar.bz2
+redmine_backups:
+  redmine_file.tar.bz2: "{{redmine_volumes.REDMINE_VOLUME}}"
+  redmine_db.tar.bz2: "{{redmine_volumes.REDMINE_DB_VOLUME}}"
+  redmine_repo.tar.bz2: "{{redmine_volumes.REDMINE_REPO_VOLUME}}"
+  redmine_gems.tar.bz2: "{{redmine_volumes.REDMINE_GEMS_VOLUME}}"
 
 
 gmail_address: whatever@gmail.com
 gmail_password: whateverpass
+
+redmine_plugins:
+  mattermost: >
+    git clone https://github.com/altsol/redmine_mattermost.git redmine_mattermost;
+    cd redmine_mattermost;
+    bundle install;
+  slack: >
+    git clone https://github.com/sciyoshi/redmine-slack.git redmine_slack;
+    cd redmine_slack;
+    bundle install;
