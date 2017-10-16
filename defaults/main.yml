@@ -1,9 +1,12 @@
 alpine_image: alpine
 project_name: redmine
 
-REDMINE_DB_VOLUME: "redminedb"
 REDMINE_DB_PASSWORD: example
-REDMINE_VOLUME: "redmine"
+
+redmine_volumes:
+  - REDMINE_DB_VOLUME: "redminedb"
+  - REDMINE_VOLUME: "redmine"
+  - REDMINE_REPO_VOLUME: "redmine_repos"
 
 SSL: False
 redmine_domain_name: redmine.mysite.xyz,redmine.oapzeroeaprjeopa.onion

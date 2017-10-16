@@ -23,6 +23,7 @@ services:
       - proxy_net
     volumes:
       - {{ REDMINE_VOLUME }}:/usr/src/redmine
+      - {{ REDMINE_REPO_VOLUME }}:/repos
     environment:
      VIRTUAL_HOST: {{ redmine_domain_name }}
      VIRTUAL_PROTO: http
