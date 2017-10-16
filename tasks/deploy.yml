@@ -4,16 +4,16 @@
     project_src: /tmp/{{ project_name }}
 
 - name: "Send ssh keys"
-  file:
+  copy:
     content: "{{ item.value }}"
-    name: /tmp/{{item.key}}
+    dest: /tmp/{{item.key}}
   with_dict: "{{redmine_ssh_keys}}"
 
 - name: "Add ssh keys"
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "mkdir /root/.ssh"
-    docker cp /tmp/id_rsa {{project_name}}_redmine_1:/root/.ssh/id_rsa
-    docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/root/.ssh/id_rsa.pub
+  shell: |
+    docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /root/.ssh";
+    docker cp /tmp/id_rsa {{project_name}}_redmine_1:/root/.ssh/id_rsa;
+    docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/root/.ssh/id_rsa.pub;
 
 - name: "Delete ssh keys"
   file:
