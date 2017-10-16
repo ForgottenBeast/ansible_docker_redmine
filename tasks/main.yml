@@ -1,0 +1,77 @@
+- include: create_volumes.yml
+  become: True
+  tags:
+    - redmine_volumes_setup
+    - redmine_setup
+
+- include: setup.yml
+  become: True
+  tags: redmine_setup
+
+- include: backup.yml
+  become: True
+  tags: redmine_all_backup
+
+- name: "Create docker-compose folder"
+  tags:
+   - redmine_destroy
+   - redmine_deploy
+   - redmine_restore
+  file:
+    name: /tmp/{{ project_name }}
+    state: directory
+
+- name: "Creating a tor hidden service private key if there is none..."
+  include: gen_rsa.yml
+  when: tor_hidden_service_private_key == None and
+        TOR_HH == True
+
+- name: "Write docker-compose"
+  tags: 
+    - redmine_destroy
+    - redmine_deploy
+    - redmine_restore
+  template:
+    src: docker-compose.j2
+    dest: /tmp/{{ project_name }}/docker-compose.yml
+
+- include: restore.yml
+  become: True
+  tags: redmine_all_restore
+
+- name: "Allow docker containers to communicate with the outside"
+  become: True
+  tags:
+   - redmine_deploy
+   - redmine_restore
+  command: iptables -t nat -A POSTROUTING -s 172.0.0.0/8 ! -d 172.0.0.0/8 -j MASQUERADE
+
+- include: deploy.yml
+  become: True
+  tags:
+    - redmine_deploy
+    - redmine_restore
+
+- include: destroy.yml
+  become: True
+  tags: redmine_destroy
+
+- name: "Remove docker-compose folder"
+  become: True
+  tags:
+    - redmine_deploy
+    - redmine_destroy
+    - redmine_restore
+  file:
+    name: /tmp/{{ project_name }}
+    state: absent
+
+- debug:
+    msg: |
+      Done setting up, to finish the installation point your bowse to
+      {{ redmine_domain_name }}/admin/install.php
+  tags: redmine_setup
+
+- debug:
+    msg: The deed is done.
+  tags: redmine_destroy

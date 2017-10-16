@@ -1,0 +1,54 @@
+################################################################
+#If you add files in here remove them at the end of task block!#
+################################################################
+
+- name: "Update local redmine clean image"
+  docker_image:
+    name: redmine:latest
+    state: present
+    force: True
+    pull: True
+
+- name: "Start temporary clean redmine service to copy files"
+  docker_container:
+    name: tmp_redmine
+    image: redmine:latest
+    state: started
+    volumes:
+      - "{{ REDMINE_VOLUME }}:/redmine_files"
+
+- name: "Copy configuration to server"
+  template:
+    src: configuration.j2
+    dest: /tmp/configuration.yml
+
+- name: "Start temporary clean maria service to copy files"
+  docker_container:
+    name: tmp_db
+    image: mariadb
+    state: started
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ REDMINE_DB_PASSWORD }}"
+    volumes:
+      - "{{ REDMINE_DB_VOLUME }}:/maria_files"
+
+- name: "Wait 5 seconds for db to start up"
+  pause:
+    seconds: 5
+
+- name: "Copy clean files to docker volumes"
+  shell: |
+    docker exec tmp_redmine bash -c "cp -a /usr/src/redmine/. /redmine_files;"
+
+    docker cp /tmp/configuration.yml tmp_redmine:/redmine_files/config/configuration.yml
+
+    docker exec tmp_db cp -a /var/lib/mysql/. /mariafiles
+  retries: 3
+
+- name: "Stop temporary services"
+  docker_container:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - tmp_db
+    - tmp_redmine

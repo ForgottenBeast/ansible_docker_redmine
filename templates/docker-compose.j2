@@ -1,0 +1,56 @@
+{% macro wpkey(key) %}
+{{ key }}
+{% endmacro %}
+
+version: "2"
+volumes:
+  {{ REDMINE_DB_VOLUME }}:
+    external: True
+  {{ REDMINE_VOLUME }}:
+    external: True
+
+services:
+
+  redmine:
+    image: redmine
+    network_mode: bridge
+    volumes:
+      - {{ REDMINE_VOLUME }}:/usr/src/redmine
+    environment:
+     VIRTUAL_HOST: {{ redmine_domain_name }}
+     VIRTUAL_PROTO: http
+     REDMINE_DB_MYSQL: mysql
+     REDMINE_DB_PASSWORD: {{REDMINE_DB_PASSWORD}}
+{% if SSL == True %}
+     LETSENCRYPT_HOST: {{ redmine_domain_name }}
+     LETSENCRYPT_EMAIL: {{ redmine_letsencrypt_mail }}
+     LETSENCRYPT_TEST: "{{ letsencrypt_testmode }}"
+{% endif %}
+
+    links:
+      - mysql
+    restart: always
+
+  mysql:
+    network_mode: bridge
+    image: mariadb:latest
+    volumes:
+      - {{ REDMINE_DB_VOLUME }}:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD={{REDMINE_DB_PASSWORD}}
+      - MYSQL_DATABASE=redmine
+    restart: always
+
+
+{% if TOR_HH %}
+  torhh:
+    restart: always
+    network_mode: bridge
+    image: goldy/tor-hidden-service
+    links:
+      - redmine
+    environment:
+      REDMINE_KEY: |
+{{ wpkey(tor_hidden_service_private_key) | indent(8,True) }}
+      REDMINE_PORTS: 3000:80
+{% endif %}

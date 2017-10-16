@@ -1,0 +1,37 @@
+- name: "Backup redmine data"
+  tags: redmine_backup
+  shell: |
+    docker run --rm -i -v {{ REDMINE_VOLUME }}:/volume:ro -v /tmp:/backup {{ alpine_image }} \
+       tar -cjf /backup/redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2 -C /volume ./
+
+- name: "Backup redmine db"
+  tags: redmine_db_backup
+  shell: |
+    docker run --rm -i -v {{ REDMINE_DB_VOLUME }}:/volume:ro -v /tmp:/backup {{ alpine_image }} \
+       tar -cjf /backup/redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2 -C /volume ./
+
+- name: "Retrieve db backup files"
+  tags: redmine_db_backup
+  fetch:
+    flat: True
+    src: /tmp/{{ item }}
+    dest: "{{ playbook_dir }}/{{ item }}"
+  with_items:
+    - "redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+
+- name: "Retrieve redmine backup files"
+  tags: redmine_backup
+  fetch:
+    flat: True
+    src: /tmp/{{ item }}
+    dest: "{{ playbook_dir }}/{{ item }}"
+  with_items:
+    - "redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+
+- name: "Clean up backup files"
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/redmine_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
+    - "/tmp/redmine_db_backup_{{ inventory_hostname }}_{{ ansible_date_time.date }}.tar.bz2"
