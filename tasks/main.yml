@@ -66,11 +66,5 @@
     state: absent
 
 - debug:
-    msg: |
-      Done setting up, to finish the installation point your bowse to
-      {{ redmine_domain_name }}/admin/install.php
-  tags: redmine_setup
-
-- debug:
     msg: The deed is done.
   tags: redmine_destroy
