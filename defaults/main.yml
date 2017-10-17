@@ -41,3 +41,7 @@ redmine_plugins:
     git clone https://github.com/sciyoshi/redmine-slack.git redmine_slack;
     cd redmine_slack;
     bundle install;
+  jenkins: >
+    git clone https://bitbucket.org/nobiinu_and/redmine_hudson;
+    cd redmine_hudson;
+    bundle install;
