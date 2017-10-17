@@ -13,7 +13,7 @@ SSL: False
 redmine_domain_name: redmine.mysite.xyz,redmine.oapzeroeaprjeopa.onion
 redmine_letsencrypt_mail: me@mydomain.com
 redmine_letsencrypt_testmode: 'true'
-
+redmine_letsencrypt_domain_name: redmine.mysite.xyz
 
 redmine_backups:
 #  redmine_file.tar.bz2: "{{redmine_volumes.REDMINE_VOLUME}}"

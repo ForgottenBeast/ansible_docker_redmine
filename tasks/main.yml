@@ -1,4 +1,5 @@
 - name: "Create proxy_net if it does not exist"
+  become: True
   docker_network:
     name: proxy_net
 
