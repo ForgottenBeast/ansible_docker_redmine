@@ -56,3 +56,8 @@
   with_items:
     - tmp_db
     - tmp_redmine
+
+- name: "Delete conf file"
+  file:
+    name: /tmp/configuration.yml
+    state: absent
