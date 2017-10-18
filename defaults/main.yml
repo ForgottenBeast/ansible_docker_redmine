@@ -30,9 +30,6 @@ redmine_ssh_keys:
   id_rsa.pub: AAAA.......thing@there
 
 redmine_plugins:
-  git_remote: >
-    git clone https://github.com/dergachev/redmine_git_remote
-
   mattermost: >
     git clone https://github.com/altsol/redmine_mattermost.git redmine_mattermost;
     cd redmine_mattermost;
