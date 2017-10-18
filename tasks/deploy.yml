@@ -9,11 +9,17 @@
     dest: /tmp/{{item.key}}
   with_dict: "{{redmine_ssh_keys}}"
 
-- name: "Add ssh keys"
+- name: "Add ssh keys and cron"
   shell: |
-    docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /root/.ssh";
-    docker cp /tmp/id_rsa {{project_name}}_redmine_1:/root/.ssh/id_rsa;
-    docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/root/.ssh/id_rsa.pub;
+    docker exec {{project_name}}_redmine_1 bash -c "apt-get update;\
+        apt-get install -y cron"
+
+    docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh"
+        
+    docker cp /tmp/id_rsa {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa;
+    docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa.pub;
+
+    docker exec {{project_name}}_redmine_1 bash -c chown redmine -R "/home/redmine"
 
 - name: "Delete ssh keys"
   file:
