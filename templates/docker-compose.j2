@@ -10,8 +10,6 @@ volumes:
     external: True
   {{ redmine_volumes.REDMINE_VOLUME }}:
     external: True
-  {{ redmine_volumes.REDMINE_REPO_VOLUME }}:
-    external: True
   {{ redmine_volumes.REDMINE_GEMS_VOLUME }}:
     external: True
 
@@ -23,7 +21,6 @@ services:
       - proxy_net
     volumes:
       - {{ redmine_volumes.REDMINE_VOLUME }}:/usr/src/redmine
-      - {{ redmine_volumes.REDMINE_REPO_VOLUME }}:/repos
       - {{ redmine_volumes.REDMINE_GEMS_VOLUME }}:/usr/local/bundle
     environment:
      VIRTUAL_HOST: {{ redmine_domain_name }}

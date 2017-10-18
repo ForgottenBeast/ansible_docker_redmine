@@ -6,7 +6,6 @@ REDMINE_DB_PASSWORD: example
 redmine_volumes:
   REDMINE_DB_VOLUME: "redminedb"
   REDMINE_VOLUME: "redmine"
-  REDMINE_REPO_VOLUME: "redmine_repos"
   REDMINE_GEMS_VOLUME: "redmine_gems"
 
 SSL: False
