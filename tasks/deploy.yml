@@ -11,15 +11,14 @@
 
 - name: "Add ssh keys and cron"
   shell: |
-    docker exec {{project_name}}_redmine_1 bash -c "apt-get update;\
-        apt-get install -y cron"
+    docker exec {{project_name}}_redmine_1 bash -c "apt-get update; apt-get install -y cron vim"
 
     docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh"
         
     docker cp /tmp/id_rsa {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa;
     docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa.pub;
 
-    docker exec {{project_name}}_redmine_1 bash -c chown redmine -R "/home/redmine"
+    docker exec {{project_name}}_redmine_1 bash -c "chown redmine -R '/home/redmine'; chmod 0600 /home/redmine/.ssh/id_rsa"
 
 - name: "Delete ssh keys"
   file:
