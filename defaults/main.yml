@@ -26,7 +26,9 @@ gmail_password: whateverpass
 
 repo_path: /usr/src/redmine/files/
 repositories:
-  example.git: me@github/example.git
+  example.git:
+    repo: me@github/example.git
+    host: github.com
 
 redmine_ssh_keys:
   id_rsa: AAAA.......thing@there
