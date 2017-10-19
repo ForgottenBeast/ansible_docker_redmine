@@ -11,7 +11,7 @@
 
 - name: "Add ssh keys and cron"
   shell: |
-    docker exec {{project_name}}_redmine_1 bash -c "apt-get update; apt-get install -y cron vim"
+    docker exec {{project_name}}_redmine_1 bash -c "apt-get update; apt-get install -y cron vim; cron"
 
     docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh"
         
