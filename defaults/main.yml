@@ -24,6 +24,10 @@ redmine_backups:
 gmail_address: whatever@gmail.com
 gmail_password: whateverpass
 
+repo_path: /usr/src/redmine/files/
+repositories:
+  example.git: me@github/example.git
+
 redmine_ssh_keys:
   id_rsa: AAAA.......thing@there
   id_rsa.pub: AAAA.......thing@there

@@ -52,6 +52,15 @@
     - redmine_deploy
     - redmine_restore
 
+- name: "Mirror clone repositories"
+  tags: redmine_repos
+  become: True
+  command: >
+    docker exec {{project_name}}_redmine_1 bash -c "su redmine;
+    git clone --mirror {{repo.value}} {{repo_path}}{{repo.key}}; crontab -l > mycron; echo '*/5 * * * * app cd {{repo_path}}{{repo.key}} && git fetch -q --all -p'
+    >> mycron; crontab mycron; rm mycron;"
+  with_dict: repositories
+
 - include: destroy.yml
   become: True
   tags: redmine_destroy
