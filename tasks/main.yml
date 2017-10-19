@@ -64,7 +64,7 @@
   become: True
   command: >
     docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --mirror {{item.value.repo}} {{repo_path}}{{item.key}};
-    crontab -l > mycron; echo '*/5 * * * * app cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
+    crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
     >> mycron; crontab mycron; rm mycron;"
   with_dict: "{{repositories}}"
 
