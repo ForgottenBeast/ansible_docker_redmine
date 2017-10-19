@@ -218,14 +218,13 @@ production:
    email_delivery:
      delivery_method: :smtp
      smtp_settings: 
-       tls: true
        enable_starttls_auto: true
        address: "smtp.gmail.com" 
        port: 587
        domain: "smtp.gmail.com" 
        authentication: :plain
        user_name: "{{gmail_address}}" 
-       password: {{gmail_password}}
+       password: "{{gmail_password}}"
 # specific configuration options for development environment
 # that overrides the default ones
 development:
