@@ -12,6 +12,7 @@
 - name: "Add ssh keys"
   shell: |
     docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh"
+    docker exec {{project_name}}_redmine_1 bash -c "touch /home/redmine/.ssh/config"
         
     docker cp /tmp/id_rsa {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa;
     docker cp /tmp/id_rsa.pub {{project_name}}_redmine_1:/home/redmine/.ssh/id_rsa.pub;

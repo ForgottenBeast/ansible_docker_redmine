@@ -44,6 +44,8 @@
     docker exec tmp_redmine bash -c "cp -a /usr/src/redmine/. /redmine_files;"
     docker exec tmp_redmine bash -c "cp -a /usr/local/bundle/. /redmine_gems;"
 
+    docker exec -u redmine tmp_redmine bash -c "mkdir -p /redmine_files/repos /redmine_files/uploads"
+
     docker cp /tmp/configuration.yml tmp_redmine:/redmine_files/config/configuration.yml
 
     docker exec tmp_db cp -a /var/lib/mysql/. /mariafiles

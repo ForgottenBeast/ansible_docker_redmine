@@ -24,7 +24,7 @@ redmine_backups:
 gmail_address: whatever@gmail.com
 gmail_password: whateverpass
 
-repo_path: /usr/src/redmine/files/
+repo_path: /usr/src/redmine/repos/
 repositories:
   example.git:
     repo: me@github/example.git
