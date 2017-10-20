@@ -52,21 +52,11 @@
     - redmine_deploy
     - redmine_restore
 
-- name: "Add hosts to ssh config to prevent key checking"
-  tags: redmine_repos
+- include: repos.yml
   become: True
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n" >> /home/redmine/.ssh/config'
+  tags: redmine_repos
   with_dict: "{{repositories}}"
 
-- name: "Mirror clone repositories"
-  tags: redmine_repos
-  become: True
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --recursive --mirror {{item.value.repo}} {{repo_path}}{{item.key}};
-    crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch --recurse-submodules -q --all -p'
-    >> mycron; crontab mycron; rm mycron;"
-  with_dict: "{{repositories}}"
 
 - include: destroy.yml
   become: True
