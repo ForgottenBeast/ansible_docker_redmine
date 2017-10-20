@@ -18,8 +18,8 @@
 
 - name: "Mirror clone repository {{item.key}}"
   command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --recursive --mirror {{item.value.repo}} {{repo_path}}{{item.key}};
-    crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch --recurse-submodules -q --all -p'
+    docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --mirror {{item.value.repo}} {{repo_path}}{{item.key}};
+    crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
     >> mycron; crontab mycron; rm mycron;"
   when: st|failed
         and item.value.repo is defined
