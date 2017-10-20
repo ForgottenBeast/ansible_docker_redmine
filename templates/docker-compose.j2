@@ -17,6 +17,9 @@ services:
 
   redmine:
     image: redmine
+    command: >
+      apt-get update; apt-get install -y cron vim; cron;
+      rails server -b 0.0.0.0;
     networks:
       - proxy_net
     volumes:
