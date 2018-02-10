@@ -52,7 +52,14 @@
     - redmine_deploy
     - redmine_restore
 
-- include: repos.yml
+- name: "List repositories"
+  become: True
+  tags: redmine_repos
+  command: >
+    docker exec {{project_name}}_redmine_1 bash -c "ls {{repo_path}}"
+  register: repo_list
+
+- include: add_repos.yml
   become: True
   tags: redmine_repos
   with_dict: "{{repositories}}"

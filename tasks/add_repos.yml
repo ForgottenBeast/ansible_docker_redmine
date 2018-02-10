@@ -3,26 +3,20 @@
     docker exec -u redmine {{project_name}}_redmine_1 bash -c "cat /home/redmine/.ssh/config"
   register: sshconfig
 
-
 - name: "Add host {{item.value.host}} to ssh config to prevent key checking"
   command: >
     docker exec -u redmine {{project_name}}_redmine_1 bash -c 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n\tPort {{item.value.port | default(22)}}" >> /home/redmine/.ssh/config'
   when: item.value.host is defined
         and sshconfig.stdout.find(item.value.host) == -1
 
-- name: "Check if repo {{repo_path}}{{item.key}} already exists"
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "ls {{repo_path}}{{item.key}}"
-  register: st
-  ignore_errors: True
-
 - name: "Mirror clone repository {{item.key}}"
   command: >
     docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --mirror {{item.value.repo}} {{repo_path}}{{item.key}};"
+  when: "{{item.key}} not in repo_list"
 
 - name: "Add repo update to crontab"
   command: >
       docker exec -u redmine {{project_name}}_redmine_1 bash -c "crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
     >> mycron; crontab mycron; rm mycron;"
-  when: st|failed
+  when: "{{item.key not in repo_list"
         and item.value.repo is defined
