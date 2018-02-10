@@ -64,6 +64,11 @@
   tags: redmine_repos
   with_dict: "{{repositories}}"
 
+- name: "Delete removed repositories"
+  become: True
+  tags: redmine_repos
+  include: del_repos.yml
+  with_items: "{{ repo_list.stdout.split() }}"
 
 - include: destroy.yml
   become: True
