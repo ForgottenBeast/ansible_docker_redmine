@@ -6,7 +6,7 @@
 
 - name: "Add host {{item.value.host}} to ssh config to prevent key checking"
   command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n" >> /home/redmine/.ssh/config'
+    docker exec -u redmine {{project_name}}_redmine_1 bash -c 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n\tPort {{item.value.port | default(22)}}" >> /home/redmine/.ssh/config'
   when: item.value.host is defined
         and sshconfig.stdout.find(item.value.host) == -1
 

@@ -29,6 +29,7 @@ repositories:
   example.git:
     repo: me@github/example.git
     host: github.com
+    port: 22 #not necessary when 22
 
 redmine_ssh_keys:
   id_rsa: AAAA.......thing@there
