@@ -15,9 +15,8 @@ redmine_letsencrypt_testmode: 'true'
 redmine_letsencrypt_domain_name: redmine.mysite.xyz
 
 redmine_backups:
-#  redmine_file.tar.bz2: "{{redmine_volumes.REDMINE_VOLUME}}"
-  redmine_db.tar.bz2: "{{redmine_volumes.REDMINE_DB_VOLUME}}"
-#  redmine_repo.tar.bz2: "{{redmine_volumes.REDMINE_REPO_VOLUME}}"
+#  redmine_db.tar.bz2: "{{redmine_volumes.REDMINE_DB_VOLUME}}"
+#  redmine_repo.tar.bz2: "{{redmine_volumes.REDMINE_VOLUME}}"
 #  redmine_gems.tar.bz2: "{{redmine_volumes.REDMINE_GEMS_VOLUME}}"
 
 
