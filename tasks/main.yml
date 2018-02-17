@@ -52,6 +52,22 @@
     docker exec {{project_name}}_redmine_1 bash -c "ls {{repo_path}}"
   register: repo_list
 
+- name: "List repos in crontab"
+  become: True
+  tags: redmine_repos
+  command: >
+    docker exec {{project_name}}_redmine_1 bash -c "crontab -u redmine -l"
+  register: cron_repos
+
+- name: "Create ssh folder if it does not exist"
+  command: >
+      docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh; chown redmine -R /home/redmine"
+
+- name: "Touch ssh config file"
+  command: >
+    docker exec -u redmine {{project_name}}_redmine_1 bash -c "touch /home/redmine/.ssh/config"
+
+
 - include: add_repos.yml
   become: True
   tags: redmine_repos
