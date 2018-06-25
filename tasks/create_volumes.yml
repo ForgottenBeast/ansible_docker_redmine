@@ -1,5 +1,7 @@
 - name: "Create docker volumes"
   include: volumes.yml
   become: True
-  tags: redmine_setup
+  tags:
+    - redmine_setup
+    - redmine_volumes_setup
   with_dict: "{{redmine_volumes}}"

@@ -3,17 +3,20 @@
   docker_network:
     name: proxy_net
 
-- include: create_volumes.yml
+- name: "Create volumes"
+  include_tasks: create_volumes.yml
   become: True
   tags:
     - redmine_volumes_setup
     - redmine_setup
 
-- include: setup.yml
+- name: "Run setup"
+  import_tasks: setup.yml
   become: True
   tags: redmine_setup
 
-- include: backup.yml
+- name: "Run backup"
+  import_tasks: backup.yml
   become: True
   tags: redmine_all_backup
 
@@ -35,51 +38,22 @@
     src: docker-compose.j2
     dest: /tmp/{{ project_name }}/docker-compose.yml
 
-- include: restore.yml
+- name: "Restore files"
+  import_tasks: restore.yml
   become: True
   tags: redmine_all_restore
 
-- include: deploy.yml
+- name: "Deploy redmine"
+  import_tasks: deploy.yml
   become: True
   tags:
     - redmine_deploy
     - redmine_restore
 
-- name: "List repositories"
-  become: True
+- import_tasks: redmine.yml
   tags: redmine_repos
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "ls {{repo_path}}"
-  register: repo_list
 
-- name: "List repos in crontab"
-  become: True
-  tags: redmine_repos
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "crontab -u redmine -l"
-  register: cron_repos
-
-- name: "Create ssh folder if it does not exist"
-  command: >
-      docker exec {{project_name}}_redmine_1 bash -c "mkdir -p /home/redmine/.ssh; chown redmine -R /home/redmine"
-
-- name: "Touch ssh config file"
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "touch /home/redmine/.ssh/config"
-
-
-- include: add_repos.yml
-  become: True
-  tags: redmine_repos
-  with_dict: "{{repositories}}"
-
-- name: "Delete removed repositories"
-  become: True
-  tags: redmine_repos
-  include: del_repos.yml
-  with_items: "{{ repo_list.stdout.split() }}"
-
-- include: destroy.yml
+- import_tasks: destroy.yml
   become: True
   tags: redmine_destroy
 

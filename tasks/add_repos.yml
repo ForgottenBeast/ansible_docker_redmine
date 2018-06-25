@@ -1,22 +1,22 @@
-- name: "Read redmine ssh config file"
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "cat /home/redmine/.ssh/config"
-  register: sshconfig
+- block:
+  tags: redmine_repos
 
-- name: "Add host {{item.value.host}} to ssh config to prevent key checking"
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n\tPort {{item.value.port | default(22)}}" >> /home/redmine/.ssh/config'
-  when: item.value.host is defined
-        and sshconfig.stdout.find(item.value.host) == -1
-
-- name: "Mirror clone repository {{item.key}}"
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "git clone --mirror {{item.value.repo}} {{repo_path}}{{item.key}};"
-  when: item.key not in repo_list.stdout
-
-- name: "Add repo update to crontab"
-  command: >
-    docker exec -u redmine {{project_name}}_redmine_1 bash -c "crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
-    >> mycron; crontab mycron; rm mycron;"
-  when: item.key not in cron_repos.stdout
-        and item.value.repo is defined
+  - name: "Read redmine ssh config file"
+    command: "cat /home/redmine/.ssh/config"
+    register: sshconfig
+  
+  - name: "Add host {{item.value.host}} to ssh config to prevent key checking"
+    command: 'echo -e "Host {{item.value.host}}\n\tStrictHostKeyChecking no\n\tPort {{item.value.port | default(22)}}" >> /home/redmine/.ssh/config'
+    when: item.value.host is defined
+          and sshconfig.stdout.find(item.value.host) == -1
+  
+  - name: "Mirror clone repository {{item.key}}"
+    command: "git clone --mirror {{item.value.repo}} {{repo_path}}{{item.key}};"
+    when: item.key not in repo_list.stdout
+  
+  - name: "Add repo update to crontab"
+    command: >
+      "crontab -l > mycron; echo '*/5 * * * * cd {{repo_path}}{{item.key}} && git fetch -q --all -p'
+      >> mycron; crontab mycron; rm mycron;"
+    when: item.key not in cron_repos.stdout
+          and item.value.repo is defined

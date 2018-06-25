@@ -1,9 +1,9 @@
-- name: "Delete {{ item }} repository"
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "rm -r {{repo_path}}{{item}}"
-  when: item not in repositories
-
-- name: "Remove repo update from crontab"
-  command: >
-    docker exec {{project_name}}_redmine_1 bash -c "crontab -u redmine -l | grep -v {{item}} |  crontab -u redmine -"
-  when: item not in repositories
+- block:
+  tags: redmine_repos
+  - name: "Delete {{ item }} repository"
+    command: "rm -r {{repo_path}}{{item}}"
+    when: item not in repositories
+  
+  - name: "Remove repo update from crontab"
+    command: "crontab -u redmine -l | grep -v {{item}} |  crontab -u redmine -"
+    when: item not in repositories
